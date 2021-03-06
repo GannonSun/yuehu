@@ -14,7 +14,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
+import useClickOutside from '@/hooks/useClickOutside';
 export default defineComponent({
   name: 'Dropdown',
   props: {
@@ -30,21 +31,11 @@ export default defineComponent({
       isOpen.value = !isOpen.value;
     };
 
-    const handler = (e: MouseEvent) => {
-      if (
-        !dropdownRef.value?.contains(e.target as HTMLElement) &&
-        isOpen.value
-      ) {
+    const isClickOutside = useClickOutside(dropdownRef);
+    watch(isClickOutside, () => {
+      if (isClickOutside.value && isOpen.value) {
         isOpen.value = false;
       }
-    };
-
-    onMounted(() => {
-      document.addEventListener('click', handler);
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener('click', handler);
     });
 
     return {
